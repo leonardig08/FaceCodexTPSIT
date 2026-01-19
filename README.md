@@ -7,7 +7,6 @@
 ## 📋 Indice
 * [Descrizione del Progetto](#descrizione-del-progetto)
 * [Caratteristiche Principali](#caratteristiche-principali)
-* [Architettura](#architettura)
 * [Tecnologie Utilizzate](#tecnologie-utilizzate)
 * [Integrazione Forense](#integrazione-forense)
 
@@ -27,30 +26,18 @@ Il cuore del sistema risiede nella sua capacità di apprendimento continuo: più
 * **FBI Most Wanted Integration:** Modulo di scansione automatica per il confronto dei tratti somatici con la lista dei ricercati dell'FBI (Criminal Investigative Division).
 * **Liveness Detection:** Protezione contro attacchi di spoofing (tentativi di bypass tramite foto o video del volto).
 
-## 🏗️ Architettura
-
-L'API segue i principi della **Clean Architecture** ed è strutturata in vari layer:
-
-1.  **Ingestion Layer:** Ricezione e normalizzazione delle immagini (correzione esposizione e allineamento pupillare).
-2.  **Extraction Layer:** Utilizzo di reti neurali convoluzionali (CNN) per generare l'embedding facciale a 128 o 512 dimensioni.
-3.  **Matching Engine:** Motore di ricerca vettoriale per il calcolo della distanza euclidea o similarità del coseno tra volti.
-4.  **External Gateway:** Interfaccia di comunicazione sicura verso le API governative e database internazionali.
 
 ## 🛠️ Tecnologie Utilizzate
 
-* **Runtime:** .NET 8.0 / C#
-* **AI Engine:** DlibDotNet / Emgu CV (OpenCV per .NET)
-* **Database Vettoriale:** PostgreSQL con estensione `pgvector`
+* **Runtime:** .NET 9.0 / C#
+* **AI Engine:** SkyBiometry
+* **Database:** SQL Server
 * **Interfaccia:** ASP.NET Core Web API con supporto Swagger/OpenAPI
-* **Sicurezza:** Integrità dei dati tramite hashing dei template biometrici
 
 ## 🔍 Integrazione Forense
 
 FaceCodex include un connettore specializzato progettato per interfacciarsi con il database criminale dell'**FBI**. Questo modulo permette di:
 * Sincronizzare periodicamente i profili dei ricercati ad alto rischio.
-* Inviare alert automatici in caso di corrispondenza superiore alla soglia di confidenza del 95%.
-* Generare report forensi dettagliati con metadati di confronto biometrico.
-
 ---
 
 > **Nota Legale:** L'uso di FaceCodex API deve essere conforme alle normative locali sulla privacy (GDPR, CCPA) e ai protocolli di sicurezza nazionale. L'accesso ai dati FBI richiede credenziali istituzionali valide.
