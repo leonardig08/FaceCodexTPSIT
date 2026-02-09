@@ -20,6 +20,29 @@ namespace FaceCodexTPSIT.Controllers
             _skyBiometryService = skyBiometryService;
         }
 
+        private string randString(int size)
+        {
+            Random res = new Random();
+
+            // String that contain both alphabets and numbers
+            String str = "abcdefghijklmnopqrstuvwxyz0123456789";
+
+            // Initializing the empty string
+            String randomstring = "";
+
+            for (int i = 0; i < size; i++)
+            {
+
+                // Selecting a index randomly
+                int x = res.Next(str.Length);
+
+                // Appending the character at the 
+                // index to the random alphanumeric string.
+                randomstring = randomstring + str[x];
+            }
+            return randomstring;
+        }
+
         /// <summary>
         /// Aggiunge una persona reale al database biometrico
         /// </summary>
@@ -60,11 +83,14 @@ namespace FaceCodexTPSIT.Controllers
         /// <summary>
         /// Riconoscimento rapido senza inserimento nel database
         /// </summary>
-        [HttpPost("checkCriminaleStatic")]
+        [HttpPost("CheckPersona")]
         public async Task<IActionResult> CheckPersona([FromBody] StaticCheckRequest request)
         {
+            
+
+            var imageUploadUrl = await _skyBiometryService.uploadToImgBb(request.ImageUrl, randString(4), randString(4));
             var recognizeResult = await _skyBiometryService.RecognizeAsync(
-                request.ImageUrl,
+                imageUploadUrl,
                 NamespaceName
             );
 
