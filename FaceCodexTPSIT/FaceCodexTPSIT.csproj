@@ -19,6 +19,7 @@
 
   <ItemGroup>
     <None Include="wwwroot\imgs\1.jpg" />
+    <None Include="wwwroot\imgs\2.jpg" />
   </ItemGroup>
 
 </Project>

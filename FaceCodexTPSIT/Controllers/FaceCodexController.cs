@@ -51,9 +51,19 @@ namespace FaceCodexTPSIT.Controllers
         {
             var uid = $"{request.Nome.ToLower()}.{request.Cognome.ToLower()}@{NamespaceName}";
 
-            var imageUploadUrl = await _skyBiometryService.uploadToImgBb(request.ImageUrl, request.Nome, request.Cognome);
+            // Costruisci percorso fisico del file in wwwroot/imgs
+            var localPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "imgs", request.ImageUrl);
 
-            // 1. Face detect
+            if (!System.IO.File.Exists(localPath))
+                return BadRequest($"Immagine '{request.ImageUrl}' non trovata nella cartella imgs.");
+
+            // Costruisci URL pubblico
+            var baseUrl = $"{Request.Scheme}://{Request.Host}";
+            var imageUrl = $"{baseUrl}/imgs/{request.ImageUrl}";
+
+            // Carica su ImgBB
+            var imageUploadUrl = await _skyBiometryService.uploadToImgBb(imageUrl, request.Nome, request.Cognome);
+
             var detectResult = await _skyBiometryService.DetectFacesAsync(imageUploadUrl);
 
             var tags = detectResult.RootElement
@@ -61,16 +71,11 @@ namespace FaceCodexTPSIT.Controllers
                 .GetProperty("tags");
 
             if (tags.GetArrayLength() == 0)
-            {
                 return BadRequest("Nessun volto rilevato nell'immagine.");
-            }
 
             var tid = tags[0].GetProperty("tid").GetString();
 
-            // 2. Save tag
             await _skyBiometryService.SaveTagAsync(uid, tid);
-
-            // 3. Train user
             await _skyBiometryService.TrainUserAsync(uid);
 
             return Ok(new
@@ -80,15 +85,27 @@ namespace FaceCodexTPSIT.Controllers
             });
         }
 
+
         /// <summary>
         /// Riconoscimento rapido senza inserimento nel database
         /// </summary>
         [HttpPost("CheckPersona")]
         public async Task<IActionResult> CheckPersona([FromBody] StaticCheckRequest request)
         {
-            
+            // Costruisci percorso fisico del file in wwwroot/imgs
+            var localPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "imgs", request.ImageUrl);
 
-            var imageUploadUrl = await _skyBiometryService.uploadToImgBb(request.ImageUrl, randString(4), randString(4));
+            if (!System.IO.File.Exists(localPath))
+                return BadRequest($"Immagine '{request.ImageUrl}' non trovata nella cartella imgs.");
+
+            // Costruisci URL pubblico
+            var baseUrl = $"{Request.Scheme}://{Request.Host}";
+            var imageUrl = $"{baseUrl}/imgs/{request.ImageUrl}";
+
+            // Carica su ImgBB
+            var imageUploadUrl = await _skyBiometryService.uploadToImgBb(imageUrl, randString(4), randString(4));
+
+            // Riconosci la persona
             var recognizeResult = await _skyBiometryService.RecognizeAsync(
                 imageUploadUrl,
                 NamespaceName
@@ -96,5 +113,6 @@ namespace FaceCodexTPSIT.Controllers
 
             return Ok(recognizeResult.RootElement);
         }
+
     }
 }

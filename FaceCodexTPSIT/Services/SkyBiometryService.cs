@@ -106,25 +106,43 @@ namespace FaceCodexTPSIT.Services
             return JsonDocument.Parse(json);
         }
 
-        public async Task<String> uploadToImgBb(string localUrl, string nome, string cognome)
+        public async Task<string> uploadToImgBb(string localOrUrl, string nome, string cognome)
         {
-            if (File.Exists(localUrl))
+            byte[] imgBytes;
+
+            // Legge immagine da URL o file locale
+            if (Uri.IsWellFormedUriString(localOrUrl, UriKind.Absolute))
             {
-                var imgBytes = await System.IO.File.ReadAllBytesAsync(localUrl);
-                var url = $"https://api.imgbb.com/1/upload?key={_apiKey}&image={Convert.ToBase64String(imgBytes)}&name={nome}_{cognome}";
+                imgBytes = await _httpClient.GetByteArrayAsync(localOrUrl);
+            }
+            else
+            {
+                if (!File.Exists(localOrUrl))
+                    throw new FileNotFoundException("Immagine non trovata", localOrUrl);
 
-                var response = await _httpClient.PostAsync(url, null);
-                response.EnsureSuccessStatusCode();
-
-                var json = await response.Content.ReadAsStringAsync();
-                var jsonDoc = JsonDocument.Parse(json);
-
-                return jsonDoc.RootElement.GetProperty("data").GetProperty("url").GetString();
+                imgBytes = await File.ReadAllBytesAsync(localOrUrl);
             }
 
-            else return null;
-            
+            var base64Img = Convert.ToBase64String(imgBytes);
 
+            // Solo il campo image nel form
+            var content = new MultipartFormDataContent();
+            content.Add(new StringContent(base64Img), "image");
+
+            // URL con la key come query string
+            var url = $"https://api.imgbb.com/1/upload?key={_apiImg}&name={nome}_{cognome}";
+
+            var response = await _httpClient.PostAsync(url, content);
+            var responseBody = await response.Content.ReadAsStringAsync();
+
+            if (!response.IsSuccessStatusCode)
+                throw new Exception($"Errore ImgBB ({response.StatusCode}): {responseBody}");
+
+            var jsonDoc = JsonDocument.Parse(responseBody);
+            return jsonDoc.RootElement.GetProperty("data").GetProperty("url").GetString();
         }
+
+
+
     }
 }
