@@ -11,6 +11,7 @@ namespace FaceCodexTPSIT.Services
         private readonly HttpClient _httpClient;
         private readonly string _apiKey;
         private readonly string _apiSecret;
+        private readonly string _apiImg;
 
         private const string BaseUrl = "https://api.skybiometry.com/fc";
 
@@ -19,6 +20,7 @@ namespace FaceCodexTPSIT.Services
             _httpClient = httpClient;
             _apiKey = configuration["SkyBiometry:ApiKey"];
             _apiSecret = configuration["SkyBiometry:ApiSecret"];
+            _apiImg = configuration["SkyBiometry:ImgBB"];
         }
 
         private string AuthQuery =>
@@ -102,6 +104,27 @@ namespace FaceCodexTPSIT.Services
             ));
 
             return JsonDocument.Parse(json);
+        }
+
+        public async Task<String> uploadToImgBb(string localUrl, string nome, string cognome)
+        {
+            if (File.Exists(localUrl))
+            {
+                var imgBytes = await System.IO.File.ReadAllBytesAsync(localUrl);
+                var url = $"https://api.imgbb.com/1/upload?key={_apiKey}&image={Convert.ToBase64String(imgBytes)}&name={nome}_{cognome}";
+
+                var response = await _httpClient.PostAsync(url, null);
+                response.EnsureSuccessStatusCode();
+
+                var json = await response.Content.ReadAsStringAsync();
+                var jsonDoc = JsonDocument.Parse(json);
+
+                return jsonDoc.RootElement.GetProperty("data").GetProperty("url").GetString();
+            }
+
+            else return null;
+            
+
         }
     }
 }

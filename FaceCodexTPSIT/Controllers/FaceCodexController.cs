@@ -28,8 +28,10 @@ namespace FaceCodexTPSIT.Controllers
         {
             var uid = $"{request.Nome.ToLower()}.{request.Cognome.ToLower()}@{NamespaceName}";
 
+            var imageUploadUrl = await _skyBiometryService.uploadToImgBb(request.ImageUrl, request.Nome, request.Cognome);
+
             // 1. Face detect
-            var detectResult = await _skyBiometryService.DetectFacesAsync(request.ImageUrl);
+            var detectResult = await _skyBiometryService.DetectFacesAsync(imageUploadUrl);
 
             var tags = detectResult.RootElement
                 .GetProperty("photos")[0]
