@@ -5,9 +5,11 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using FaceCodexTPSIT.Models;
 using FaceCodexTPSIT.Services;
+using Microsoft.AspNetCore.Authorization;
 
 namespace FaceCodexTPSIT.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/facecodex")]
     public class FaceCodexController : ControllerBase
