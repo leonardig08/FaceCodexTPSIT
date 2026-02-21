@@ -10,12 +10,12 @@ Il progetto integra servizi esterni di Face Recognition e permette la gestione s
 ---
 
 ## 📋 Indice
-- [Descrizione](#descrizione)
-- [Caratteristiche](#caratteristiche)
-- [Tecnologie](#tecnologie)
-- [Autenticazione JWT](#autenticazione-jwt)
-- [Installazione](#installazione)
-- [Esempi di Endpoints](#esempi-di-endpoints)
+- [Descrizione]()
+- [Caratteristiche]()
+- [Tecnologie]()
+- [Autenticazione JWT]()
+- [Installazione]()
+- [Esempi di Endpoints]()
 
 ---
 
