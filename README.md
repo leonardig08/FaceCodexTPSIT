@@ -1,46 +1,124 @@
-# FaceCodex API 🛡️👤
+# FaceCodex API 👤🔐
 
-**FaceCodex API** è un sistema di sicurezza biometrica di livello enterprise sviluppato in **C# / .NET**. L'applicazione fornisce un'infrastruttura completa per l'addestramento, il riconoscimento e l'identificazione facciale, integrando un modulo avanzato di cross-referencing con i database globali di pubblica sicurezza, tra cui il database dei ricercati dell'**FBI**.
+[![.NET](https://img.shields.io/badge/.NET-9.0-blue)](https://dotnet.microsoft.com/)
+[![C#](https://img.shields.io/badge/C%23-9.0-brightgreen)](https://docs.microsoft.com/en-us/dotnet/csharp/)
+[![Swagger](https://img.shields.io/badge/Swagger-OpenAPI-orange)](https://swagger.io/)
+[![SQL Server](https://img.shields.io/badge/SQL%20Server-Cloud-red)](https://www.microsoft.com/en-us/sql-server)
+
+**FaceCodex API** è un servizio Web REST sviluppato in **C# / .NET 9.0** per l’addestramento e il riconoscimento facciale.  
+Il progetto integra servizi esterni di Face Recognition e permette la gestione sicura dei dati tramite **JWT Token**.
 
 ---
 
 ## 📋 Indice
-* [Descrizione del Progetto](#descrizione-del-progetto)
-* [Caratteristiche Principali](#caratteristiche-principali)
-* [Tecnologie Utilizzate](#tecnologie-utilizzate)
-* [Integrazione Forense](#integrazione-forense)
+- [Descrizione](#descrizione)
+- [Caratteristiche](#caratteristiche)
+- [Tecnologie](#tecnologie)
+- [Autenticazione JWT](#autenticazione-jwt)
+- [Installazione](#installazione)
+- [Esempi di Endpoints](#esempi-di-endpoints)
 
 ---
 
-## 🚀 Descrizione del Progetto
+## 🚀 Descrizione
 
-FaceCodex è progettata per essere il cervello di sistemi di sorveglianza intelligenti e piattaforme di verifica dell'identità. L'API trasforma i dati visivi non strutturati in "Codici Facciali" (vettori matematici) che possono essere memorizzati, ricercati e confrontati in millisecondi.
+FaceCodex API consente di:
 
-Il cuore del sistema risiede nella sua capacità di apprendimento continuo: più immagini di un soggetto vengono fornite, più accurato diventa il riconoscimento, riducendo drasticamente i falsi positivi anche in condizioni di scarsa illuminazione o angolazioni parziali.
+- Registrare persone reali tramite immagini
+- Addestrare il sistema al riconoscimento del volto
+- Riconoscere volti da nuove immagini
+- Proteggere gli endpoint con **JWT**
 
-## ✨ Caratteristiche Principali
-
-* **Neural Face Training:** Addestramento dinamico di modelli biometrici su dataset proprietari.
-* **Identificazione Real-Time:** Riconoscimento istantaneo di individui all'interno di flussi video o immagini statiche.
-* **Deep Search Comparison:** Algoritmo di confronto 1:N per identificare soggetti sconosciuti all'interno di un database di milioni di record.
-* **FBI Most Wanted Integration:** Modulo di scansione automatica per il confronto dei tratti somatici con la lista dei ricercati dell'FBI (Criminal Investigative Division).
-* **Liveness Detection:** Protezione contro attacchi di spoofing (tentativi di bypass tramite foto o video del volto).
-
-
-## 🛠️ Tecnologie Utilizzate
-
-* **Runtime:** .NET 9.0 / C#
-* **AI Engine:** SkyBiometry
-* **Database:** SQL Server
-* **Interfaccia:** ASP.NET Core Web API con supporto Swagger/OpenAPI
-
-## 🔍 Integrazione Forense
-
-FaceCodex include un connettore specializzato progettato per interfacciarsi con il database criminale dell'**FBI**. Questo modulo permette di:
-* Sincronizzare periodicamente i profili dei ricercati ad alto rischio.
----
-
-> **Nota Legale:** L'uso di FaceCodex API deve essere conforme alle normative locali sulla privacy (GDPR, CCPA) e ai protocolli di sicurezza nazionale. L'accesso ai dati FBI richiede credenziali istituzionali valide.
+Il sistema sfrutta **SkyBiometry** per il rilevamento e riconoscimento facciale e **ImgBB** per l’hosting delle immagini.
 
 ---
-*Sviluppato con dedizione per un mondo più sicuro.*
+
+## ✨ Caratteristiche
+
+- **Aggiunta Persona:** carica immagine → rileva volto → salva tag → addestra modello  
+- **Riconoscimento Volti:** carica immagine → confronta con database → restituisce risultato  
+- **JWT Authentication:** accesso protetto tramite token  
+- **Swagger:** documentazione e test API integrati  
+
+---
+
+## 🛠️ Tecnologie
+
+- **Runtime:** .NET 9.0 / C#  
+- **Framework:** ASP.NET Core Web API  
+- **Autenticazione:** JWT Bearer  
+- **API Esterne:**  
+  - [SkyBiometry](https://skybiometry.com/demo/face-recognition-demo/)  
+  - [ImgBB](https://it.imgbb.com/)
+- **Documentazione:** Swagger / OpenAPI  
+
+---
+
+## 🔐 Autenticazione JWT
+
+1. Effettua login:  
+   ```http
+   POST /api/auth/login
+   {
+     "username": "admin",
+     "password": "1234"
+   }
+   ```
+2. Inserisci token nell’header Authorization per chiamare endpoint protetti:
+    ```css
+    Authorization: {token}
+    ```
+
+---
+
+## ⚙️ Installazione
+
+1. Clona il repository:
+    ```bash
+    git clone https://github.com/leonardig08/FaceCodexAPI.git
+    ```
+2. Apri il progetto in Visual Studio 2022
+3. Configura ``` appsettings.json ``` con le credenziali SkyBiometry e ImgBB, oltre a JWT key/issuer/audience
+4. Esegui il progetto (F5)
+5. Accedi a Swagger:
+    ```bash
+    https://localhost:{porta}/swagger
+    ```
+
+---
+
+## 📡 Esempi di Endpoints
+
+1. **Autenticazione**
+    ```http
+    POST /api/auth/login
+    ```
+
+2. **Inserimento Persona**
+    ```http
+    POST /api/facecodex/AddPerson
+    ```
+   Body esempio:
+    ```json
+    {
+      "nome": "Mario",
+      "cognome": "Rossi",
+      "imageUrl": "mario.jpg"
+    }
+    ```
+
+3. **Riconoscimento Persona**
+    ```http
+    POST /api/facecodex/CheckPerson
+    ```
+   Body esempio:
+    ```json
+    {
+      "imageUrl": "mario_test.jpg"
+    }
+    ```
+  
+
+  
+
+
