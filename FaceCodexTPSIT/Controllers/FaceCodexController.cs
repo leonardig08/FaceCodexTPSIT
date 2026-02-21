@@ -48,7 +48,7 @@ namespace FaceCodexTPSIT.Controllers
         /// <summary>
         /// Aggiunge una persona reale al database biometrico
         /// </summary>
-        [HttpPost("aggiungiPersonaReale")]
+        [HttpPost("AddPerson")]
         public async Task<IActionResult> AggiungiPersonaReale([FromBody] AddPersonaRequest request)
         {
             var uid = $"{request.Nome.ToLower()}.{request.Cognome.ToLower()}@{NamespaceName}";
@@ -91,7 +91,7 @@ namespace FaceCodexTPSIT.Controllers
         /// <summary>
         /// Riconoscimento rapido senza inserimento nel database
         /// </summary>
-        [HttpPost("CheckPersona")]
+        [HttpPost("CheckPerson")]
         public async Task<IActionResult> CheckPersona([FromBody] StaticCheckRequest request)
         {
             // Costruisci percorso fisico del file in wwwroot/imgs
