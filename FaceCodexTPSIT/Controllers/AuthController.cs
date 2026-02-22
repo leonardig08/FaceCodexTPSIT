@@ -21,7 +21,6 @@
         [HttpPost("login")]
         public IActionResult Login([FromBody] User login)
         {
-            // Esempio semplice (puoi collegarlo al DB)
             if (login.Username != "admin" || login.Password != "1234")
                 return Unauthorized();
 

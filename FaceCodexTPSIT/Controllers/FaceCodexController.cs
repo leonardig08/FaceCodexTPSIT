@@ -51,7 +51,10 @@ namespace FaceCodexTPSIT.Controllers
         [HttpPost("AddPerson")]
         public async Task<IActionResult> AggiungiPersonaReale([FromBody] AddPersonaRequest request)
         {
-            var uid = $"{request.Nome.ToLower()}.{request.Cognome.ToLower()}@{NamespaceName}";
+            var nome = request.Nome.Trim().ToLower();
+            var cognome = request.Cognome.Trim().ToLower();
+
+            var uid = $"{nome}.{cognome}@{NamespaceName}";
 
             // Costruisci percorso fisico del file in wwwroot/imgs
             var localPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "imgs", request.ImageUrl);
@@ -64,7 +67,7 @@ namespace FaceCodexTPSIT.Controllers
             var imageUrl = $"{baseUrl}/imgs/{request.ImageUrl}";
 
             // Carica su ImgBB
-            var imageUploadUrl = await _skyBiometryService.uploadToImgBb(imageUrl, request.Nome, request.Cognome);
+            var imageUploadUrl = await _skyBiometryService.uploadToImgBb(imageUrl, nome, cognome);
 
             var detectResult = await _skyBiometryService.DetectFacesAsync(imageUploadUrl);
 
@@ -115,6 +118,45 @@ namespace FaceCodexTPSIT.Controllers
 
             return Ok(recognizeResult.RootElement);
         }
+        /// <summary>
+        /// Restituisce esattamente la risposta di SkyBiometry (account/users)
+        /// </summary>
+        [HttpGet("GetAllPersons")]
+        public async Task<IActionResult> GetAllPersons()
+        {
+            var result = await _skyBiometryService.GetUsersFromNamespaceAsync(NamespaceName);
+
+            // Ritorna ESATTAMENTE il JSON ricevuto
+            return Content(
+                result.RootElement.GetRawText(),
+                "application/json"
+            );
+        }
+        /// <summary>
+        /// Elimina completamente un utente (nome + cognome)
+        /// </summary>
+        [HttpDelete("DeleteUser")]
+        public async Task<IActionResult> DeleteUser([FromQuery] string nome, [FromQuery] string cognome)
+        {
+            if (string.IsNullOrWhiteSpace(nome) || string.IsNullOrWhiteSpace(cognome))
+                return BadRequest("Nome e Cognome obbligatori.");
+
+            try
+            {
+                var result = await _skyBiometryService.DeleteUserAsync(nome, cognome, NamespaceName);
+
+                return Ok(new
+                {
+                    message = "Utente eliminato correttamente e modello riaddestrato.",
+                    result = result.RootElement
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { error = ex.Message });
+            }
+        }
 
     }
-}
+
+    }
