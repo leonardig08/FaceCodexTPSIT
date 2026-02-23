@@ -1,8 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Text.Json;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using FaceCodexTPSIT.Models;
 using FaceCodexTPSIT.Services;
 using Microsoft.AspNetCore.Authorization;
